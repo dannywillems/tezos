@@ -13,6 +13,7 @@ variables:
 stages:
   - sanity
   - build
+  - build-multi-platform
   - test
   - doc
   - packaging
@@ -128,6 +129,50 @@ build:
       - _build/default/src/lib_protocol_compiler/main_native.exe
     expire_in: 1 day
     when: on_success
+
+############################################################
+## Stage: build-multi-platform (only MR)                 ##
+############################################################
+
+.build_multi_platform_template: &build_multi_platform_definition
+  stage: build-multi-platform
+  except:
+    - master
+    - zeronet
+    - mainnet
+    - zeronet-staging
+    - mainnet-staging
+    - zeronet-snapshots
+    - mainnet-snapshots
+    - latest-release
+    - tags
+  before_script:
+    - opam --version
+  script:
+    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain=1.39.0
+    - . $HOME/.cargo/env
+    - make build-deps
+    - eval $(opam env)
+    - make
+  interruptible: true
+
+check_build_ubuntu_20.04:
+  <<: *build_multi_platform_definition
+  image: ocaml/opam:ubuntu-20.04-opam
+  before_script:
+    - opam --version
+    # build-essential is for make. Others are required by depext.
+    - sudo apt-get update
+    - sudo apt-get install build-essential libev-dev perl pkg-config -y
+
+check_build_ubuntu_20.10:
+  <<: *build_multi_platform_definition
+  image: ocaml/opam:ubuntu-20.10-opam
+  before_script:
+    - opam --version
+    - sudo apt-get update
+    # build-essentials is for make.
+    - sudo apt-get install build-essential -y
 
 ############################################################
 ## Stage: test (only MR)                                  ##
