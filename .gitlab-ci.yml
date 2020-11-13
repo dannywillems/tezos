@@ -136,16 +136,6 @@ build:
 
 .build_multi_platform_template: &build_multi_platform_definition
   stage: build-multi-platform
-  except:
-    - master
-    - zeronet
-    - mainnet
-    - zeronet-staging
-    - mainnet-staging
-    - zeronet-snapshots
-    - mainnet-snapshots
-    - latest-release
-    - tags
   before_script:
     - opam --version
   script:
