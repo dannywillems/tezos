@@ -164,6 +164,14 @@ check_build_ubuntu_20.04:
     # build-essential is for make. Others are required by depext.
     - sudo apt-get update
     - sudo apt-get install build-essential libev-dev perl pkg-config -y
+  artifacts:
+    name: "build-ubuntu-20.04-$CI_COMMIT_REF_SLUG"
+    paths:
+      - tezos-*
+      - src/proto_*/parameters/*.json
+      - _build/default/src/lib_protocol_compiler/main_native.exe
+    expire_in: 15 day
+    when: on_success
 
 check_build_ubuntu_20.10:
   <<: *build_multi_platform_definition
@@ -173,6 +181,14 @@ check_build_ubuntu_20.10:
     - sudo apt-get update
     # build-essentials is for make.
     - sudo apt-get install build-essential -y
+  artifacts:
+    name: "build-ubuntu-20.10-$CI_COMMIT_REF_SLUG"
+    paths:
+      - tezos-*
+      - src/proto_*/parameters/*.json
+      - _build/default/src/lib_protocol_compiler/main_native.exe
+    expire_in: 15 day
+    when: on_success
 
 ############################################################
 ## Stage: test (only MR)                                  ##
